@@ -1,15 +1,11 @@
-import pathlib
-
-import jinja2
+import xml.etree.ElementTree
 
 
-def get_template(template_name):
-    TEMPLATES_PATH = pathlib.Path(__file__).resolve().parent / "templates"
-    loader = jinja2.FileSystemLoader(searchpath=TEMPLATES_PATH)
-    env = jinja2.Environment(loader=loader)
-    return env.get_template(template_name)
+def update_gui_address(config_file):
+    tree = xml.etree.ElementTree.parse(config_file)
+    root = tree.getroot()
 
-
-def render_template(template_name, data=None):
-    template = get_template(template_name)
-    return template.render(data=data)
+    gui_element = root.find("gui")
+    address_element = gui_element.find("address")
+    address_element.text = "0.0.0.0:8384"
+    tree.write(config_file)
